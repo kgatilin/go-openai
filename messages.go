@@ -92,6 +92,7 @@ func (c *Client) ListMessage(ctx context.Context, threadID string,
 	order *string,
 	after *string,
 	before *string,
+	runID *string,
 ) (messages MessagesList, err error) {
 	urlValues := url.Values{}
 	if limit != nil {
@@ -105,6 +106,9 @@ func (c *Client) ListMessage(ctx context.Context, threadID string,
 	}
 	if before != nil {
 		urlValues.Add("before", *before)
+	}
+	if runID != nil {
+		urlValues.Add("run_id", *runID)
 	}
 	encodedValues := ""
 	if len(urlValues) > 0 {

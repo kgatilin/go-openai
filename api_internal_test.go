@@ -113,6 +113,7 @@ func TestAzureFullURL(t *testing.T) {
 		BaseURL          string
 		AzureModelMapper map[string]string
 		Model            string
+		Suffix           string
 		Expect           string
 	}{
 		{
@@ -120,6 +121,7 @@ func TestAzureFullURL(t *testing.T) {
 			"https://httpbin.org/",
 			nil,
 			"chatgpt-demo",
+			"/chat/completions",
 			"https://httpbin.org/" +
 				"openai/deployments/chatgpt-demo" +
 				"/chat/completions?api-version=2023-05-15",
@@ -129,9 +131,19 @@ func TestAzureFullURL(t *testing.T) {
 			"https://httpbin.org",
 			nil,
 			"chatgpt-demo",
+			"/chat/completions",
 			"https://httpbin.org/" +
 				"openai/deployments/chatgpt-demo" +
 				"/chat/completions?api-version=2023-05-15",
+		},
+		{
+			"AzureSuffixQueryParametersOK",
+			"https://httpbin.org",
+			nil,
+			"chatgpt-demo",
+			"/threads/thread_SadcnESWTs6WLssltVh9Xbvz/messages?run_id=run_3RppeQFcvcCZXHGb4BK5RP02",
+			"https://httpbin.org/" +
+				"openai/threads/thread_SadcnESWTs6WLssltVh9Xbvz/messages?api-version=2023-05-15&run_id=run_3RppeQFcvcCZXHGb4BK5RP02",
 		},
 	}
 
@@ -140,7 +152,7 @@ func TestAzureFullURL(t *testing.T) {
 			az := DefaultAzureConfig("dummy", c.BaseURL)
 			cli := NewClientWithConfig(az)
 			// /openai/deployments/{engine}/chat/completions?api-version={api_version}
-			actual := cli.fullURL("/chat/completions", c.Model)
+			actual := cli.fullURL(c.Suffix, c.Model)
 			if actual != c.Expect {
 				t.Errorf("Expected %s, got %s", c.Expect, actual)
 			}

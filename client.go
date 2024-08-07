@@ -235,6 +235,16 @@ func (c *Client) fullURL(suffix string, args ...any) string {
 		// if suffix is /models change to {endpoint}/openai/models?api-version=2022-12-01
 		// https://learn.microsoft.com/en-us/rest/api/cognitiveservices/azureopenaistable/models/list?tabs=HTTP
 		if containsSubstr([]string{"/models", "/assistants", "/threads", "/files"}, suffix) {
+			suffixParsed, _ := url.Parse(suffix)
+			if suffixParsed != nil && len(suffixParsed.Query()) > 0 {
+				suffix = suffixParsed.Path
+				for key, values := range suffixParsed.Query() {
+					for _, value := range values {
+						query.Add(key, value)
+					}
+				}
+			}
+
 			return fmt.Sprintf("%s/%s%s?%s", baseURL, azureAPIPrefix, suffix, query.Encode())
 		}
 		azureDeploymentName := "UNKNOWN"
